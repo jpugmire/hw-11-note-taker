@@ -2,7 +2,7 @@
 
 const util = require('util');
 const fs = require('fs');
-const uuidv1 = require('uuid/v1');
+const { v1: uuidv1} = require('uuid');
 
 const readFileAsync = util.promisify(fs.readFile);
 const writeFileAsync = util.promisify(fs.writeFile);
@@ -16,18 +16,18 @@ class Store {
         return writeFileAsync('db/db.json', JSON.stringify(entry));
     }
 
+    //function to get all notes from json
     getNotes() {
-        return this.read().then((entries) => {
-            let parsedNotes;
-            try {
-                parsedNotes = [].concat(JSON.parse(entries));
-            }  
-            catch (err) {
-                parsedNotes = [];
-            }
-
-            return parsedNotes;
-        });
+        let json = fs.readFileSync('./db/db.json', 'utf8');
+        return JSON.parse(json);
+        // fs.readFileSync('./db/db.json', 'utf8', (err, data) => {
+        //     if(err){
+        //         console.log(err);
+        //     }
+        //     else {
+        //         _callback
+        //     }
+        // });
     }
 
     addNote(entry) {
@@ -38,9 +38,14 @@ class Store {
             throw new Error("Note 'title' and 'text' must have a value.");
         }
 
-        const newNote = { title, text, id: uuidv1() };
-        const allEntries = this.getNotes().then((entries) => entries.push(newNote));
-        this.write(allEntries);
+        //create new note
+        const newNote = { title, content, id: uuidv1() };
+        //get all notes
+        let allEntries = this.getNotes();
+        //add new note to list
+        allEntries.push(newNote);
+        //write list to json
+        fs.writeFileSync('./db/db.json', JSON.stringify(allEntries, null, 3));
         return newNote;
     }
 

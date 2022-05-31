@@ -57,7 +57,7 @@ const renderActiveNote = () => {
     noteTitle.setAttribute('readonly', true);
     noteText.setAttribute('readonly', true);
     noteTitle.value = activeNote.title;
-    noteText.value = activeNote.text;
+    noteText.value = activeNote.content;
   } else {
     noteTitle.removeAttribute('readonly');
     noteText.removeAttribute('readonly');
@@ -69,7 +69,7 @@ const renderActiveNote = () => {
 const handleNoteSave = () => {
   const newNote = {
     title: noteTitle.value,
-    text: noteText.value,
+    content: noteText.value,
   };
   saveNote(newNote).then(() => {
     getAndRenderNotes();
@@ -126,13 +126,13 @@ const renderNoteList = async (notes) => {
   let noteListItems = [];
 
   // Returns HTML element with or without a delete button
-  const createLi = (text, delBtn = true) => {
+  const createLi = (content, delBtn = true) => {
     const liEl = document.createElement('li');
     liEl.classList.add('list-group-item');
 
     const spanEl = document.createElement('span');
     spanEl.classList.add('list-item-title');
-    spanEl.innerText = text;
+    spanEl.innerText = content;
     spanEl.addEventListener('click', handleNoteView);
 
     liEl.append(spanEl);
